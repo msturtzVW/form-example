@@ -8,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -25,10 +24,6 @@ const formSchema = z.object({
 });
 
 function App() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [emailAddress, setEmailAddress] = useState('');
-
   const {
     control,
     handleSubmit,
@@ -37,9 +32,9 @@ function App() {
     formState: { errors },
   } = useForm<FormData>({
     values: {
-      firstName,
-      lastName,
-      emailAddress,
+      firstName: '',
+      lastName: '',
+      emailAddress: '',
     },
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -47,7 +42,7 @@ function App() {
 
   const onSubmit: SubmitHandler<FormData> = (values: FormData) => {
     clearErrors();
-    if (emailAddress.length < 4) {
+    if (values.emailAddress.length < 4) {
       setError('emailAddress', {
         message: 'Email Address is not long enough.',
       });
@@ -69,16 +64,15 @@ function App() {
         <Controller
           control={control}
           name='firstName'
-          render={({ field }) => (
+          render={({ field: { onChange, value } }) => (
             <FormControl fullWidth>
               <TextField
-                {...field}
                 label='First Name'
                 variant='outlined'
                 sx={{ margin: 2 }}
-                value={firstName}
+                value={value}
                 onChange={(e) => {
-                  setFirstName(e.target.value);
+                  onChange(e);
                 }}
               />
             </FormControl>
@@ -88,18 +82,17 @@ function App() {
         <Controller
           control={control}
           name='lastName'
-          render={({ field }) => (
+          render={({ field: { onChange, value } }) => (
             <FormControl fullWidth>
               <TextField
-                {...field}
                 label='Last Name'
                 variant='outlined'
                 required
                 sx={{ margin: 2 }}
                 onChange={(e) => {
-                  setLastName(e.target.value);
+                  onChange(e);
                 }}
-                value={lastName}
+                value={value}
                 error={!!errors.lastName}
               />
               {!!errors.lastName && (
@@ -114,19 +107,18 @@ function App() {
         <Controller
           control={control}
           name='emailAddress'
-          render={({ field }) => (
+          render={({ field: { onChange, value } }) => (
             <FormControl fullWidth>
               <TextField
-                {...field}
                 label='Email Address'
                 variant='outlined'
                 required
                 sx={{ margin: 2 }}
                 error={!!errors.emailAddress}
                 onChange={(e) => {
-                  setEmailAddress(e.target.value);
+                  onChange(e);
                 }}
-                value={emailAddress}
+                value={value}
               />
               {!!errors.emailAddress && (
                 <FormHelperText error>
